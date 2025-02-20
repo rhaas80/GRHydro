@@ -1,0 +1,94 @@
+ABSTOL 1.e-11
+RELTOL 1.e-11
+
+TEST tov_carpetevolutionmask
+{
+        NPROCS 2
+}
+
+TEST tov_carpetevolutionmask2
+{
+        NPROCS 2
+}
+
+TEST test_tov_carpet_refined_nosync
+{
+        NPROCS 2
+}
+
+TEST balsara1_1d
+{
+        NPROCS 2
+}
+
+TEST balsara1_2d
+{
+        NPROCS 2
+}
+
+TEST balsara2_1d
+{
+        NPROCS 2
+}
+
+TEST balsara2_2d
+{
+        NPROCS 2
+}
+
+TEST balsara3_1d
+{
+        NPROCS 2
+}
+
+TEST balsara3_2d
+{
+        NPROCS 2
+}
+
+TEST balsara4_1d
+{
+        NPROCS 2
+        RELTOL 1e-8 grhydro-bcom
+        RELTOL 1e-9 hydrobase-w_lorentz
+        RELTOL 1e-10 hydrobase-(eps|rho)
+}
+
+TEST balsara4_2d
+{
+        NPROCS 2
+        RELTOL 1e-8 grhydro-bcom
+        RELTOL 1e-9 hydrobase-w_lorentz
+        RELTOL 1e-10 hydrobase-(eps|rho)
+}
+
+TEST balsara5_1d
+{
+        NPROCS 2
+}
+
+TEST balsara5_2d
+{
+        NPROCS 2
+}
+
+TEST cylexp_tvd_mc2_hlle
+{
+        NPROCS 2
+}
+
+TEST balsara1_1d_dc
+{
+        NPROCS 2
+}
+
+TEST balsara1_2d_dc
+{
+        NPROCS 2
+}
+
+TEST cylexp_tvd_mc2_hlle_dc
+{
+        NPROCS 2
+}
+

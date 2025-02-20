@@ -1,0 +1,108 @@
+!DESC "PUGH unigrid, one TOV, slow sector" 
+ActiveThorns = "time MoL coordbase symbase cartgrid3d ioutil boundary admbase staticconformal spacemask coordgauge admmacros hydrobase grhydro grhydro_initdata tovsolver eos_omni Constants LocalReduce PUGH PUGHSlab IOBasic LoopControl TmunuBase InitBase ReflectionSymmetry IOASCII"
+
+TmunuBase::stress_energy_storage	=	yes
+TmunuBase::stress_energy_at_RHS		=	yes
+
+time::dtfac = 0.375
+
+boundary::radpower        = 2
+
+SpaceMask::use_mask = "yes"
+
+CartGrid3D::type         = "coordbase"
+CartGrid3D::domain       = "full"
+CartGrid3D::avoid_origin = "no"
+CoordBase::domainsize = minmax
+
+CoordBase::spacing = "numcells"
+CoordBase::xmin =    0.0
+CoordBase::ymin =    0.0
+CoordBase::zmin =    0.0
+CoordBase::xmax =   15.001
+CoordBase::ymax =   15.001
+CoordBase::zmax =   15.001
+CoordBase::ncells_x = 33
+CoordBase::ncells_y = 33
+CoordBase::ncells_z = 33
+
+CoordBase::boundary_size_x_lower        = 3
+CoordBase::boundary_size_y_lower        = 3
+CoordBase::boundary_size_z_lower        = 3
+CoordBase::boundary_shiftout_x_lower    = 1
+CoordBase::boundary_shiftout_y_lower    = 1
+CoordBase::boundary_shiftout_z_lower    = 1
+CoordBase::boundary_size_x_upper        = 3
+CoordBase::boundary_size_y_upper        = 3
+CoordBase::boundary_size_z_upper        = 3
+CoordBase::boundary_shiftout_x_upper    = 0
+CoordBase::boundary_shiftout_y_upper    = 0
+CoordBase::boundary_shiftout_z_upper    = 0
+
+PUGH::global_nsize = 21
+PUGH::periodic_x   = "no"
+PUGH::periodic_y   = "no"
+PUGH::periodic_z   = "no"
+
+ReflectionSymmetry::reflection_x        = "yes"
+ReflectionSymmetry::reflection_y        = "yes"
+ReflectionSymmetry::reflection_z        = "yes"
+ReflectionSymmetry::avoid_origin_x      = "no"
+ReflectionSymmetry::avoid_origin_y      = "no"
+ReflectionSymmetry::avoid_origin_z      = "no"
+ReflectionSymmetry::verbose = "no"
+
+driver::ghost_size   = 3
+
+cactus::cctk_itlast   =       2
+
+methodoflines::ode_method        = "rk4-rk2"
+methodoflines::mol_intermediate_steps = 4
+methodoflines::mol_num_scratch_levels = 4
+methodoflines::initial_data_is_crap = "yes"
+
+hydrobase::timelevels             = 3
+hydrobase::evolution_method       = "GRHydro"
+
+GRHydro::use_MoL_slow_multirate_sector = yes
+GRHydro::GRHydro_MaxNumEvolvedVars     = 5
+GRHydro::GRHydro_MaxNumEvolvedVarsSlow = 5
+
+GRHydro::riemann_solver            = "Marquina"
+GRHydro::GRHydro_eos_type           = "Polytype"
+GRHydro::GRHydro_eos_table          = "2D_Polytrope"
+GRHydro::recon_method              = "tvd"
+GRHydro::GRHydro_stencil            = 3
+GRHydro::bound                     = "flat"
+GRHydro::tvd_limiter               = "VanLeerMC2"
+GRHydro::rho_abs_min               = 1.e-7
+GRHydro::initial_atmosphere_factor = 0.999
+EOS_Omni::poly_gamma = 2.0
+EOS_Omni::gl_gamma = 2.0
+EOS_Omni::poly_k = 100
+EOS_Omni::gl_k = 100
+# this should be more accurate than the test tolerance to avoid O(1) changes in
+# the primitives when O(eps) changes in the conservatives trigger one more
+# iteration
+GRHydro::GRHydro_perc_ptol = 1e-13
+GRHydro::GRHydro_del_ptol = 1e-13
+
+ADMBase::initial_data  = "tov"
+ADMBase::initial_lapse = "tov"
+ADMBase::initial_shift = "tov"
+
+tovsolver::TOV_Rho_Central[0] = 1.28e-3
+tovsolver::TOV_Gamma       = 2.0
+tovsolver::TOV_K           = 100.0
+tovsolver::TOV_Combine_Method = "maximum"
+tovsolver::TOV_Populate_Timelevels = 3 # same as hydrobase, this makes GRHydro_InitialAtmosphereReset in Initial happy
+
+IO::out_dir			= $parfile
+IO::out_fileinfo                = "none"
+IO::parfile_write               = "no"
+
+IOBasic::outInfo_every = -1
+
+IOASCII::out1D_every = 1
+IOASCII::out1D_d     = "no"
+IOASCII::out1D_vars  = "hydrobase::rho admbase::gxx"
