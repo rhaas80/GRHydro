@@ -226,7 +226,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
         ! In excised region, set to atmosphere!    
         if (GRHydro_enable_internal_excision /= 0 .and. (hydro_excision_mask(i,j,k) .gt. 0)) then
            SET_ATMO_MIN(dens(i,j,k), sdetg(i,j,k)*GRHydro_rho_min, r(i,j,k)) !sqrt(det)*GRHydro_rho_min !/(1.d0+GRHydro_atmo_tolerance)
-           SET_ATMO_MIN(dens_avg(i,j,k), sdetg(i,j,k)*GRHydro_rho_min, r(i,j,k)) !sqrt(det)*GRHydro_rho_min !/(1.d0+GRHydro_atmo_tolerance)
            SET_ATMO_MIN(rho(i,j,k), GRHydro_rho_min, r(i,j,k)) !GRHydro_rho_min
            scon(i,j,k,:) = 0.d0
            vup(i,j,k,:) = 0.d0
@@ -237,7 +236,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
               temperature(i,j,k) = grhydro_hot_atmo_temp
               y_e(i,j,k) = grhydro_hot_atmo_Y_e
               y_e_con(i,j,k) = y_e(i,j,k) * dens(i,j,k)
-              y_e_con(i,j,k) = y_e(i,j,k) * dens_avg(i,j,k)
               keytemp = 1
               call EOS_Omni_press(GRHydro_eos_handle,keytemp,GRHydro_eos_rf_prec,n,&
                    rho(i,j,k),eps(i,j,k),temperature(i,j,k),y_e(i,j,k),&
@@ -253,7 +251,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
 
            ! w_lorentz=1, so the expression for tau reduces to:
            tau(i,j,k)  = sdetg(i,j,k) * (rho(i,j,k)+rho(i,j,k)*eps(i,j,k)) - dens(i,j,k)
-           tau_avg(i,j,k)  = sdetg(i,j,k) * (rho(i,j,k)+rho(i,j,k)*eps(i,j,k)) - dens_avg(i,j,k)
            
            cycle
         endif
