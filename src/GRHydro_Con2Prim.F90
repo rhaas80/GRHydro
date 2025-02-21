@@ -281,7 +281,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
            !Y_e(i,j,k) = max(min(Y_e_con(i,j,k) / dens_avg(i,j,k),GRHydro_Y_e_max),&
            !     GRHydro_Y_e_min)
         endif
-        !if (1.eq.0) then
+        if (1.eq.0) then
          !if ( dens(i,j,k) .le. sqrt(det)*GRHydro_rho_min*(1.d0+GRHydro_atmo_tolerance) ) then
          IF_BELOW_ATMO(dens_avg(i,j,k), sdetg(i,j,k)*GRHydro_rho_min, GRHydro_atmo_tolerance, r(i,j,k)) then
            SET_ATMO_MIN(dens(i,j,k), sdetg(i,j,k)*GRHydro_rho_min, r(i,j,k)) !sqrt(det)*GRHydro_rho_min !/(1.d0+GRHydro_atmo_tolerance)
@@ -315,7 +315,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
            cycle
 
          end if
-        !end if
+        end if
 
          if(evolve_temper.eq.0) then
             !Standard Con2Prim, no de-averaging
