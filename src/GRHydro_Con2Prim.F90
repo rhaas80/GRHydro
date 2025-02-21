@@ -171,7 +171,9 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
 
   !$OMP PARALLEL DO PRIVATE(i,j,k,itracer,&
   !$OMP uxx, uxy, uxz, uyy, uyz, uzz, epsnegative, anyerr, keyerr, keytemp,&
-  !$OMP warnline, dummy1, dummy2)
+  !$OMP warnline, dummy1, dummy2,&
+  !$OMP dens_in, tau_in, scon1_in, scon2_in, scon3_in, rho_in, vel_x_in, &
+  !$OMP vel_y_in, vel_z_in, eps_in, press_in, w_lorentz_in)
   do k = 1, nz 
     do j = 1, ny 
       do i = 1, nx
