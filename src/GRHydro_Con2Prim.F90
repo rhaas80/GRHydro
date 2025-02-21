@@ -326,7 +326,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
             !     uxx,uxy,uxz,uyy,uyz,uzz,sdetg(i,j,k),x(i,j,k),y(i,j,k), &
             !     z(i,j,k),r(i,j,k),epsnegative,GRHydro_rho_min,pmin, epsmin, & 
             !     GRHydro_reflevel, GRHydro_C2P_failed(i,j,k))
-          dens_in = dens_avg(i,j,k)
+            dens_in = dens_avg(i,j,k)
             tau_in = tau_avg(i,j,k)
             scon1_in = scon1_avg(i,j,k)
             scon2_in = scon2_avg(i,j,k)
