@@ -339,9 +339,9 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
             press_in = press(i,j,k)
             w_lorentz_in = w_lorentz(i,j,k)
 
-            write(11,*) "INPUT:", " dens:", dens(i,j,k), "=?=", dens_avg(i,j,k), "tau: ", tau(i,j,k), "=?=", tau_avg(i,j,k),&
-             "scon: ", scon(i,j,k,1), "=?=", scon1_avg(i,j,k), ",", scon(i,j,k,2), "=?=", scon2_avg(i,j,k), ",", scon(i,j,k,3),&
-             "=?=", scon3_avg(i,j,k)
+            !write(11,*) "INPUT:", " dens:", dens(i,j,k), "=?=", dens_avg(i,j,k), "tau: ", tau(i,j,k), "=?=", tau_avg(i,j,k),&
+            ! "scon: ", scon(i,j,k,1), "=?=", scon1_avg(i,j,k), ",", scon(i,j,k,2), "=?=", scon2_avg(i,j,k), ",", scon(i,j,k,3),&
+            ! "=?=", scon3_avg(i,j,k)
            
 
             !Test for if Con2Prim works with small changes in cons values, kinda dumb
@@ -369,16 +369,16 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
             !     z(i,j,k),r(i,j,k),epsnegative,GRHydro_rho_min,pmin, epsmin, & 
             !     GRHydro_reflevel, GRHydro_C2P_failed(i,j,k))
             
-            if(GRHydro_C2P_failed(i,j,k).ge.1) then
-              write(10,*) "Con2Prim_pt failed at input - dens: "" dens:", dens_in, " tau: ", tau_in, &
-              " scon: ", scon1_in, ",", scon2_in, ",", scon3_in, " rho: ", rho_in, " eps: ", eps_in, &
-              " press: ", press_in, " vel: ", vel_x_in, " , ", vel_y_in, " , ", vel_z_in
-              write(10,*) " OUTPUT: ","dens:", dens_avg(i,j,k), " tau: ", tau_avg(i,j,k), " scon: ", scon1_avg(i,j,k), ",", scon(i,j,k,2), ",", scon(i,j,k,3),&
-                    "metric: ", uxx, " , ", uxy, " , ", uxz, " , ", uyy, " , ", uyz , " , ", uzz, &
-                    " rho: ", rho(i,j,k), " eps: ", eps(i,j,k), &
-                    " press: ", press(i,j,k), " vel: ", vup(i,j,k,1), " , ", vup(i,j,k,2), " , ", &
-                    vup(i,j,k,3), " sdet: ", sdetg(i,j,k), " rho_min: ", GRHydro_rho_min
-            endif
+            !if(GRHydro_C2P_failed(i,j,k).ge.1) then
+            !  write(10,*) "Con2Prim_pt failed at input - dens: "" dens:", dens_in, " tau: ", tau_in, &
+            !  " scon: ", scon1_in, ",", scon2_in, ",", scon3_in, " rho: ", rho_in, " eps: ", eps_in, &
+            !  " press: ", press_in, " vel: ", vel_x_in, " , ", vel_y_in, " , ", vel_z_in
+            !  write(10,*) " OUTPUT: ","dens:", dens_avg(i,j,k), " tau: ", tau_avg(i,j,k), " scon: ", scon1_avg(i,j,k), ",", scon(i,j,k,2), ",", scon(i,j,k,3),&
+            !        "metric: ", uxx, " , ", uxy, " , ", uxz, " , ", uyy, " , ", uyz , " , ", uzz, &
+            !        " rho: ", rho(i,j,k), " eps: ", eps(i,j,k), &
+            !        " press: ", press(i,j,k), " vel: ", vup(i,j,k,1), " , ", vup(i,j,k,2), " , ", &
+            !        vup(i,j,k,3), " sdet: ", sdetg(i,j,k), " rho_min: ", GRHydro_rho_min
+            !endif
 
             call GRHydro_RPR_Con2Prim_pt(dens(i,j,k),scon(i,j,k, 1),scon(i,j,k, 2), &
                  scon(i,j,k, 3),tau(i,j,k), g11(i,j,k), g12(i,j,k), g13(i,j,k), g22(i,j,k), g23(i,j,k), g33(i,j,k), rho(i,j,k), &
