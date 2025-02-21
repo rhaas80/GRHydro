@@ -67,6 +67,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   ! Declare temporary arrays as allocatable
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: dens_avg, tau_avg
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: scon1_avg, scon2_avg, scon3_avg
+  CCTK_REAL, DIMENSION(:,:,:), allocatable :: temp1_avg, temp2_avg
 
   ! EOS Omni vars
   CCTK_INT  :: n,keytemp,anyerr,keyerr
@@ -99,6 +100,32 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
     call CCTK_ERROR("Failed to allocate scon arrays")
   endif
 
+  allocate(temp1_avg(nx,ny,nz), temp2_avg(nx,ny,nz), stat=keyerr)
+  if (keyerr /= 0) then
+    call CCTK_ERROR("Failed to allocate temp arrays")
+  endif
+
+  ! Apply de-averaging
+  call apply(dens, nx, ny, nz, 0, temp1_avg)
+  call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
+  call apply(temp2_avg, nx, ny, nz, 2, dens_avg)
+
+  call apply(tau, nx, ny, nz, 0, temp1_avg)
+  call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
+  call apply(temp2_avg, nx, ny, nz, 2, tau_avg)
+
+  call apply(scon(:,:,:,1), nx, ny, nz, 0, temp1_avg)
+  call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
+  call apply(temp1_avg, nx, ny, nz, 2, scon1_avg)
+
+  call apply(scon(:,:,:,2), nx, ny, nz, 0, temp1_avg)
+  call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
+  call apply(temp1_avg, nx, ny, nz, 2, scon2_avg)
+
+  call apply(scon(:,:,:,3), nx, ny, nz, 0, temp1_avg)
+  call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
+  call apply(temp1_avg, nx, ny, nz, 2, scon3_avg)
+
   ! Initialize arrays
   dens_avg = dens
   tau_avg = tau
@@ -106,26 +133,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   scon2_avg = scon(:,:,:,2)
   scon3_avg = scon(:,:,:,3)
 
-  ! Apply de-averaging 
-  call apply(dens, nx, ny, nz, 0, dens)
-  call apply(dens, nx, ny, nz, 1, dens)
-  call apply(dens, nx, ny, nz, 2, dens)
-
-  call apply(tau, nx, ny, nz, 0, tau)
-  call apply(tau, nx, ny, nz, 1, tau)
-  call apply(tau, nx, ny, nz, 2, tau)
-
-  call apply(scon(:,:,:,1), nx, ny, nz, 0, scon(:,:,:,1))
-  call apply(scon(:,:,:,1), nx, ny, nz, 1, scon(:,:,:,1))
-  call apply(scon(:,:,:,1), nx, ny, nz, 2, scon(:,:,:,1))
-
-  call apply(scon(:,:,:,2), nx, ny, nz, 0, scon(:,:,:,2))
-  call apply(scon(:,:,:,2), nx, ny, nz, 1, scon(:,:,:,2))
-  call apply(scon(:,:,:,2), nx, ny, nz, 2, scon(:,:,:,2))
-
-  call apply(scon(:,:,:,3), nx, ny, nz, 0, scon(:,:,:,3))
-  call apply(scon(:,:,:,3), nx, ny, nz, 1, scon(:,:,:,3))
-  call apply(scon(:,:,:,3), nx, ny, nz, 2, scon(:,:,:,3))
 
   ! Set up pointers for metric components
   if (GRHydro_UseGeneralCoordinates(cctkGH).ne.0) then
