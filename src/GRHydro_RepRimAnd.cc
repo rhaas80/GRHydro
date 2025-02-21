@@ -6,6 +6,8 @@
 
 #include "reprimand/con2prim_imhd.h"
 #include "reprimand/eos_idealgas.h"
+#include "reprimand/eos_idealgas.h"
+#include "reprimand/eos_barotr_poly.h"
 
 extern "C"
 void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
@@ -37,6 +39,9 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
   sm_symt3l metric(sm_symt3l{g11, g12, g22, g13, g23, g33});
   sm_metric3 g(metric);
 
+  // Reprimand's "evolved" type includes the sqrt(detg), so we do not have to
+  // divide it out here
+  // https://wokast.github.io/RePrimAnd/notation.html
   real_t dens = *dens_in ;
   real_t scon1 = *scon1_in ;
   real_t scon2 = *scon2_in ;
@@ -50,12 +55,16 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
   auto eos = make_eos_idealgas(adiab_ind, max_eps, max_rho);
 
   //Set up atmosphere
+  // from docs (https://wokast.github.io/RePrimAnd/eos_barotr_available.html)
+  // K = rho_p^(1-Gamma) => rho_p = K^(1/(1-Gamma)) = K^-n
+  real_t K_atmo = 100; // poly_k from parfile
+  real_t rmd_p = pow(K_atmo,-adiab_ind);
+  auto eos_atmo = make_eos_barotr_poly(adiab_ind, rmd_p, max_rho);
   real_t atmo_rho = rho_abs_min; // the parameter, GRHydro_rho_min is a grid scalar nad harder to access
-  //real_t atmo_rho = 1e-6; 
-  real_t atmo_eps = 0.1;
+  real_t atmo_eps = eos_atmo.at_rho(atmo_rho).eps();
   real_t atmo_ye = 0.5;
   real_t atmo_cut = atmo_rho * (1.+GRHydro_atmo_tolerance);
-  real_t atmo_p = eos.at_rho_eps_ye(atmo_rho, atmo_eps, atmo_ye).press();
+  real_t atmo_p = eos_atmo.at_rho(atmo_rho).press();
 
   atmosphere atmo{atmo_rho, atmo_eps, atmo_ye, atmo_p, atmo_cut};
 
@@ -105,8 +114,19 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
 
   if(rep.failed()) {
     *error = 1;
-    std::cout<<"FAIL "<<evolved.dens<<" "<<evolved.tau<<" "<<evolved.scon(0)
-    <<" "<<evolved.scon(1)<<" "<<evolved.scon(2)<<std::endl;
+    *rho = primitives.rho;
+    *eps = primitives.eps;
+    *press = primitives.press;
+    *vel1 = primitives.vel(0);
+    *vel2 = primitives.vel(1);
+    *vel3 = primitives.vel(2);
+    *scon1_in = evolved.scon(0);
+    *scon2_in = evolved.scon(1);
+    *scon3_in = evolved.scon(2);
+    *dens_in = evolved.dens;
+    *tau_in = evolved.tau;
+    //std::cout<<"FAIL "<<evolved.dens<<" "<<evolved.tau<<" "<<evolved.scon(0)
+    //<<" "<<evolved.scon(1)<<" "<<evolved.scon(2)<<std::endl;
   } else {
     *error = 0;
     //write back primitive vars
@@ -119,11 +139,11 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
     *w_lorentz = primitives.w_lor;
     if (rep.adjust_cons) {
         //write back corrected evolved vars to grid here
-        *scon1_in = evolved.scon(0) / std::sqrt(g.det);
-        *scon2_in = evolved.scon(1) / std::sqrt(g.det);
-        *scon3_in = evolved.scon(2) / std::sqrt(g.det);
-        *dens_in = evolved.dens / std::sqrt(g.det);
-        *tau_in = evolved.tau / std::sqrt(g.det);
+        *scon1_in = evolved.scon(0);
+        *scon2_in = evolved.scon(1);
+        *scon3_in = evolved.scon(2);
+        *dens_in = evolved.dens;
+        *tau_in = evolved.tau;
       }
   }
 
