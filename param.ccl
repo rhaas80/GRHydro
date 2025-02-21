@@ -749,7 +749,7 @@ CCTK_REAL Tmunu_damping_radius_max "damping radius at which Tmunu becomes 0"
 
 boolean con2prim_oct_hack "Disregard c2p failures in oct/rotsym90 boundary cells with xyz < 0" STEERABLE=ALWAYS
 {
-} "yes"
+} "no"
 
 int GRHydro_c2p_warn_from_reflevel "Start warning on given refinement level and on higher levels" STEERABLE=ALWAYS
 {
