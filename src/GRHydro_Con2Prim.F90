@@ -571,6 +571,9 @@ subroutine Con2Prim_pt(cctk_iteration,ii,jj,kk,&
 ! end EOS Omni vars
 
 
+!!$  Undensitize the variables
+  isdetg = 1.0d0/sdetg
+  udens = dens*isdetg
   usx = sx * isdetg
   usy = sy * isdetg
   usz = sz * isdetg
