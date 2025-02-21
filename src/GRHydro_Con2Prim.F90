@@ -2032,7 +2032,9 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
   real*8, dimension(nx, ny, nz), intent(out) :: a_center_xyz
 
   ! Local variables
-  integer :: i, j, k, p, GRHydro_stencil
+  integer :: i, j, k, p
+  integer :: imin, imax, jmin, jmax, kmin, kmax
+  integer, parameter :: stencil_width = 2
   integer :: i_offset(5), j_offset(5), k_offset(5)
   real*8 :: A(5)
   real*8 :: beta1, beta2, beta3
@@ -2060,20 +2062,17 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
   ], [3, 5])
 
   ! Initialize parameters
-  GRHydro_stencil = 3
   a_center_xyz = 0.0d0
 
   ! Check input validity
-  if (nx < 2*GRHydro_stencil + 1 .or. &
-      ny < 2*GRHydro_stencil + 1 .or. &
-      nz < 2*GRHydro_stencil + 1) then
-    print *, "Error: Grid dimensions too small for stencil"
-    return
+  if (nx < 2*stencil_width + 1 .or. &
+      ny < 2*stencil_width + 1 .or. &
+      nz < 2*stencil_width + 1) then
+    call CCTK_ERROR("Grid dimensions too small for stencil")
   endif
 
   if (dirn < 0 .or. dirn > 2) then
-    print *, "Error: Invalid direction"
-    return
+    call CCTK_ERROR("Invalid direction")
   endif
 
   ! Set up stencil offsets based on direction
@@ -2082,20 +2081,38 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
       i_offset = [-2, -1, 0, 1, 2]
       j_offset = [0, 0, 0, 0, 0]
       k_offset = [0, 0, 0, 0, 0]
+      imin = stencil_width
+      imax = nx - stencil_width + 1
+      jmin = 1
+      jmax = ny
+      kmin = 1
+      kmax = nz
     case (1)  ! y-direction
       i_offset = [0, 0, 0, 0, 0]
       j_offset = [-2, -1, 0, 1, 2]
       k_offset = [0, 0, 0, 0, 0]
+      imin = 1
+      imax = nx
+      jmin = stencil_width
+      jmax = ny - stencil_width + 1
+      kmin = 1
+      kmax = nz
     case (2)  ! z-direction
       i_offset = [0, 0, 0, 0, 0]
       j_offset = [0, 0, 0, 0, 0]
       k_offset = [-2, -1, 0, 1, 2]
+      imin = 1
+      imax = nx
+      jmin = 1
+      jmax = ny
+      kmin = stencil_width
+      kmax = nz - stencil_width + 1
   end select
 
   ! Main computation loops
-  do k = GRHydro_stencil, nz - GRHydro_stencil + 1
-    do j = GRHydro_stencil, ny - GRHydro_stencil + 1
-      do i = GRHydro_stencil, nx - GRHydro_stencil + 1
+  do k = kmin, kmax
+    do j = jmin, jmax
+      do i = imin, imax
         ! Gather stencil values
         do p = 1, 5
           A(p) = data(i + i_offset(p), j + j_offset(p), k + k_offset(p))
