@@ -2024,6 +2024,8 @@ end subroutine check_GRHydro_C2P_failed
 
 !Apply function as in weno.c++
 subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
+  use, intrinsic :: ieee_arithmetic
+
   implicit none
 
   ! Input/output parameters
@@ -2062,7 +2064,7 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
   ], [3, 5])
 
   ! Initialize parameters
-  a_center_xyz = 0.0d0
+  a_center_xyz = ieee_value(a_center_xyz(1,1,1), ieee_signaling_nan)
 
   ! Check input validity
   if (nx < 2*stencil_width + 1 .or. &
