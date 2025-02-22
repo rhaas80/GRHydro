@@ -37,12 +37,16 @@
    @endhistory 
 
 @@*/
+
 subroutine Conservative2Primitive(CCTK_ARGUMENTS)
+
   use Con2Prim_fortran_interfaces
+
   implicit none
 
   DECLARE_CCTK_ARGUMENTS
   DECLARE_CCTK_PARAMETERS
+  !!DECLARE_CCTK_FUNCTIONS
 
   integer :: i, j, k, itracer, nx, ny, nz
   CCTK_REAL :: uxx, uxy, uxz, uyy, uyz, uzz, pmin, epsmin, dummy1, dummy2
@@ -57,7 +61,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   CCTK_REAL :: local_min_tracer
   CCTK_REAL :: local_perc_ptol
 
-  ! Save memory when MP is not used
+  ! save memory when MP is not used
   CCTK_INT :: GRHydro_UseGeneralCoordinates
   CCTK_REAL, DIMENSION(cctk_ash1,cctk_ash2,cctk_ash3) :: g11, g12, g13, g22, g23, g33
   pointer (pg11,g11), (pg12,g12), (pg13,g13), (pg22,g22), (pg23,g23), (pg33,g33)
@@ -69,11 +73,12 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: scon1_avg, scon2_avg, scon3_avg
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: temp1_avg, temp2_avg
 
-  ! EOS Omni vars
+! begin EOS Omni vars
   CCTK_INT  :: n,keytemp,anyerr,keyerr
   CCTK_REAL :: xpress,xeps,xtemp,xye
   n = 1; keytemp = 0; anyerr = 0; keyerr = 0
   xpress = 0.0d0; xeps = 0.0d0; xtemp = 0.0d0; xye = 0.0d0
+! end EOS Omni vars
 
   if(evolve_temper.ne.0) then
      call Conservative2PrimitiveHot(CCTK_PASS_FTOF)
@@ -134,7 +139,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   scon3_avg = scon(:,:,:,3)
 
 
-  ! Set up pointers for metric components
+  ! save memory when MP is not used
   if (GRHydro_UseGeneralCoordinates(cctkGH).ne.0) then
     pg11 = loc(gaa)
     pg12 = loc(gab)
@@ -153,10 +158,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
     pvup = loc(vel)
   end if
 
-  nx = cctk_lsh(1)
-  ny = cctk_lsh(2)
-  nz = cctk_lsh(3)
-  
   if (use_min_tracer .ne. 0) then
     local_min_tracer = min_tracer
   else
@@ -278,8 +279,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
         if(evolve_Y_e.ne.0) then
            Y_e(i,j,k) = max(min(Y_e_con(i,j,k) / dens(i,j,k),GRHydro_Y_e_max),&
                 GRHydro_Y_e_min)
-           !Y_e(i,j,k) = max(min(Y_e_con(i,j,k) / dens_avg(i,j,k),GRHydro_Y_e_max),&
-           !     GRHydro_Y_e_min)
         endif
         if (1.eq.0) then
          !if ( dens(i,j,k) .le. sqrt(det)*GRHydro_rho_min*(1.d0+GRHydro_atmo_tolerance) ) then
@@ -508,14 +507,6 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   end do
   !$OMP END PARALLEL DO
 
-
-  ! Clean up before exiting
-  !if (allocated(dens_avg)) deallocate(dens_avg)
-  !if (allocated(tau_avg)) deallocate(tau_avg)
-  !if (allocated(scon1_avg)) deallocate(scon1_avg)
-  !if (allocated(scon2_avg)) deallocate(scon2_avg)
-  !if (allocated(scon3_avg)) deallocate(scon3_avg)
-  
   close(10)
   close(11)
 
@@ -572,6 +563,7 @@ subroutine Con2Prim_pt(cctk_iteration,ii,jj,kk,&
 
 
 !!$  Undensitize the variables
+
   isdetg = 1.0d0/sdetg
   udens = dens*isdetg
   usx = sx * isdetg
