@@ -71,6 +71,8 @@ USES boolean use_mask
 SHARES: EOS_Omni
 
 USES REAL poly_k
+USES REAL poly_gamma
+USES REAL gl_gamma
 
 restricted:
 

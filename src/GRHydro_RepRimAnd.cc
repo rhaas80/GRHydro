@@ -51,15 +51,16 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
 
   real_t max_eps = 11.;
   real_t max_rho = 1e6;
-  real_t adiab_ind = 1.0; // n = 1/(Gamma - 1)
+  real_t adiab_ind = 1./(gl_gamma - 1.); // n = 1/(Gamma - 1)
   auto eos = make_eos_idealgas(adiab_ind, max_eps, max_rho);
 
   //Set up atmosphere
   // from docs (https://wokast.github.io/RePrimAnd/eos_barotr_available.html)
   // K = rho_p^(1-Gamma) => rho_p = K^(1/(1-Gamma)) = K^-n
-  real_t K_atmo = 100; // poly_k from parfile
-  real_t rmd_p = pow(K_atmo,-adiab_ind);
-  auto eos_atmo = make_eos_barotr_poly(adiab_ind, rmd_p, max_rho);
+  real_t adiab_ind_atmo = 1./(poly_gamma - 1.); // n = 1/(Gamma - 1)
+  real_t K_atmo = poly_k; // poly_k from parfile
+  real_t rmd_p_atmo = pow(K_atmo,-adiab_ind);
+  auto eos_atmo = make_eos_barotr_poly(adiab_ind_atmo, rmd_p_atmo, max_rho);
   real_t atmo_rho = rho_abs_min; // the parameter, GRHydro_rho_min is a grid scalar nad harder to access
   real_t atmo_eps = eos_atmo.at_rho(atmo_rho).eps();
   real_t atmo_ye = 0.5;
