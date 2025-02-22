@@ -2078,8 +2078,8 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
       i_offset = [-2, -1, 0, 1, 2]
       j_offset = [0, 0, 0, 0, 0]
       k_offset = [0, 0, 0, 0, 0]
-      imin = stencil_width
-      imax = nx - stencil_width + 1
+      imin = 1 + stencil_width
+      imax = nx - stencil_width
       jmin = 1
       jmax = ny
       kmin = 1
@@ -2090,8 +2090,8 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
       k_offset = [0, 0, 0, 0, 0]
       imin = 1
       imax = nx
-      jmin = stencil_width
-      jmax = ny - stencil_width + 1
+      jmin = 1 + stencil_width
+      jmax = ny - stencil_width
       kmin = 1
       kmax = nz
     case (2)  ! z-direction
@@ -2102,8 +2102,8 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
       imax = nx
       jmin = 1
       jmax = ny
-      kmin = stencil_width
-      kmax = nz - stencil_width + 1
+      kmin = 1 + stencil_width
+      kmax = nz - stencil_width
   end select
 
   ! Main computation loops
