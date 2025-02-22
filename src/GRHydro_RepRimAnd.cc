@@ -77,7 +77,7 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
   real_t max_z = 1e3;
 
   //Primitive recovery parameters 
-  real_t rho_strict = 1e-6;
+  real_t rho_strict = 100 * atmo_rho;
   //Get a recovery function
   con2prim_mhd cv2pv(eos, rho_strict, ye_lenient, max_z, max_b, 
                      atmo, c2p_acc, max_iter);
