@@ -100,6 +100,7 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
     *vel1 = primitives.vel(0);
     *vel2 = primitives.vel(1);
     *vel3 = primitives.vel(2);
+    *w_lorentz = primitives.w_lor;
     *scon1_in = evolved.scon(0);
     *scon2_in = evolved.scon(1);
     *scon3_in = evolved.scon(2);
