@@ -81,29 +81,8 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
   //Get a recovery function
   con2prim_mhd cv2pv(eos, rho_strict, ye_lenient, max_z, max_b, 
                      atmo, c2p_acc, max_iter);
-
-  //Some example values
-  /*real_t tau  = 1e-8;
-  real_t scon_x = 0.;
-  real_t bcon_z = 0.;*/
   real_t trye = 0.5*dens;
   
-  // output
-  /*
-  std::vector<real_t> rho(dens.size());
-  std::vector<real_t> eps(dens.size());
-  std::vector<real_t> press(dens.size());
-  std::vector<real_t> vel(dens.size());
-  */
-
-
-  //sm_metric3 g;
-  //g.minkowski();
-
-
-  
-  
-
   //collect
   cons_vars_mhd evolved{dens, tau, trye, 
                         {scon1,scon2,scon3}, {0.,0.,0.}};    
@@ -126,8 +105,6 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
     *scon3_in = evolved.scon(2);
     *dens_in = evolved.dens;
     *tau_in = evolved.tau;
-    //std::cout<<"FAIL "<<evolved.dens<<" "<<evolved.tau<<" "<<evolved.scon(0)
-    //<<" "<<evolved.scon(1)<<" "<<evolved.scon(2)<<std::endl;
   } else {
     *error = 0;
     //write back primitive vars
