@@ -141,6 +141,7 @@ GRHydro::rho_abs_min            = 1.e-12
 GRHydro::GRHydro_atmo_tolerance = 0.01
 # Parameter controlling finite difference order of the Christoffel symbols in GRHydro
 GRHydro::sources_spatial_order  = 4
+GRHydro::GRHydro_NaN_verbose    = 0
 
 # Curvature evolution parameters
 
