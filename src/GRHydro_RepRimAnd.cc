@@ -18,7 +18,8 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
    CCTK_REAL *g22_in, CCTK_REAL *g23_in,
    CCTK_REAL *g33_in, CCTK_REAL *rho,
   CCTK_REAL *eps, CCTK_REAL *press, CCTK_REAL *vel1,
-  CCTK_REAL *vel2, CCTK_REAL *vel3, CCTK_REAL *error, CCTK_REAL *w_lorentz
+  CCTK_REAL *vel2, CCTK_REAL *vel3, CCTK_REAL *error, CCTK_REAL *w_lorentz,
+  CCTK_INT *adjust_cons
 ) {
   DECLARE_CCTK_PARAMETERS
 
@@ -153,6 +154,7 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
       *dens_in = evolved.dens;
       *tau_in = evolved.tau;
     }
+    *adjust_cons = rep.adjust_cons;
   }
 
   return;

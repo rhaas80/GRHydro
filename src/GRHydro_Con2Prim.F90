@@ -51,6 +51,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   integer :: i, j, k, itracer, nx, ny, nz
   CCTK_REAL :: uxx, uxy, uxz, uyy, uyz, uzz, pmin, epsmin, dummy1, dummy2
   logical :: epsnegative
+  CCTK_INT :: adjust_cons
   character*256 :: warnline
   
   ! Declare input/debug variables with explicit types
@@ -174,7 +175,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   !$OMP uxx, uxy, uxz, uyy, uyz, uzz, epsnegative, anyerr, keyerr, keytemp,&
   !$OMP warnline, dummy1, dummy2,&
   !$OMP dens_in, tau_in, scon1_in, scon2_in, scon3_in, rho_in, vel_x_in, &
-  !$OMP vel_y_in, vel_z_in, eps_in, press_in, w_lorentz_in)
+  !$OMP vel_y_in, vel_z_in, eps_in, press_in, w_lorentz_in, adjust_cons)
   do k = 1, nz 
     do j = 1, ny 
       do i = 1, nx
@@ -389,7 +390,16 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
                  scon3_avg(i,j,k),tau_avg(i,j,k), g11(i,j,k), g12(i,j,k), g13(i,j,k), g22(i,j,k), g23(i,j,k), g33(i,j,k), rho(i,j,k), &
                  eps(i,j,k),press(i,j,k), & 
                  vup(i,j,k,1),vup(i,j,k,2),vup(i,j,k,3),&
-                 GRHydro_C2P_failed(i,j,k), w_lorentz(i,j,k),)
+                 GRHydro_C2P_failed(i,j,k), w_lorentz(i,j,k), adjust_cons)
+            if(adjust_cons .ne. 0) then
+              ! not quite sure how to best propagate a change in de-avg quantities to avg ones
+              ! I don't really want to re-average
+              dens(i,j,k) = dens_avg(i,j,k)
+              scon(i,j,k,1) = scon1_avg(i,j,k)
+              scon(i,j,k,2) = scon2_avg(i,j,k)
+              scon(i,j,k,3) = scon3_avg(i,j,k)
+              tau(i,j,k) = tau_avg(i,j,k)
+            endif
             !     if(GRHydro_C2P_failed(i,j,k).ge.1) then
             !      write(*,*) "FAILED AT X:", X(i,j,k), " Y:", y(i,j,k), " Z:", z(i,j,k)
             !      write(10,*) "FAILED AT X:", X(i,j,k), " Y:", y(i,j,k), " Z:", z(i,j,k), " dens:", dens(i,j,k), "tau: ", tau(i,j,k), "scon: ", scon(i,j,k,1), ",", scon(i,j,k,2), ",", scon(i,j,k,3),&
