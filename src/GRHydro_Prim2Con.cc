@@ -178,13 +178,14 @@ static inline void GRHydro_SpeedOfSound(CCTK_ARGUMENTS)
 
      // don't need special error handling for analytic EOS
 #pragma omp parallel for
-       for(int k=0;k<cctk_lsh[2];k++)
-         for(int j=0;j<cctk_lsh[1];j++) {
-           int i = CCTK_GFINDEX3D(cctkGH,0,j,k);
-           EOS_Omni_press_cs2(*GRHydro_eos_handle,keytemp,GRHydro_eos_rf_prec,cctk_lsh[0],
+     for(int k = GRHydro_stencil-1; k < cctk_lsh[2]-GRHydro_stencil+1; k++)
+       for(int j = GRHydro_stencil-1; j < cctk_lsh[1]-GRHydro_stencil+1; j++) {
+           int i = CCTK_GFINDEX3D(cctkGH,GRHydro_stencil-1,j,k);
+           int nx = cctk_lsh[0] - (GRHydro_stencil - 1) - (GRHydro_stencil - 1);
+           EOS_Omni_press_cs2(*GRHydro_eos_handle,keytemp,GRHydro_eos_rf_prec,nx,
                           &(rhominus[i]),&(epsminus[i]),NULL,NULL,&(pressminus[i]),&(cs2minus[i]),
                           &(keyerr[i]),&anyerr);
-           EOS_Omni_press_cs2(*GRHydro_eos_handle,keytemp,GRHydro_eos_rf_prec,cctk_lsh[0],
+           EOS_Omni_press_cs2(*GRHydro_eos_handle,keytemp,GRHydro_eos_rf_prec,nx,
                           &(rhoplus[i]),&(epsplus[i]),NULL,NULL,&(pressplus[i]),&(cs2plus[i]),
                           &(keyerr[i]),&anyerr);
          }
