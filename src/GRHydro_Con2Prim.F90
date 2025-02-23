@@ -132,13 +132,12 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
   call apply(temp1_avg, nx, ny, nz, 2, scon3_avg)
 
-  ! Initialize arrays
-  dens_avg = dens
-  tau_avg = tau
-  scon1_avg = scon(:,:,:,1)
-  scon2_avg = scon(:,:,:,2)
-  scon3_avg = scon(:,:,:,3)
-
+  !! Initialize arrays
+  !dens_avg = dens
+  !tau_avg = tau
+  !scon1_avg = scon(:,:,:,1)
+  !scon2_avg = scon(:,:,:,2)
+  !scon3_avg = scon(:,:,:,3)
 
   ! save memory when MP is not used
   if (GRHydro_UseGeneralCoordinates(cctkGH).ne.0) then
@@ -380,17 +379,17 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
             !        vup(i,j,k,3), " sdet: ", sdetg(i,j,k), " rho_min: ", GRHydro_rho_min
             !endif
 
-            call GRHydro_RPR_Con2Prim_pt(dens(i,j,k),scon(i,j,k, 1),scon(i,j,k, 2), &
-                 scon(i,j,k, 3),tau(i,j,k), g11(i,j,k), g12(i,j,k), g13(i,j,k), g22(i,j,k), g23(i,j,k), g33(i,j,k), rho(i,j,k), &
-                 eps(i,j,k),press(i,j,k), & 
-                 vup(i,j,k,1),vup(i,j,k,2),vup(i,j,k,3),&
-                 GRHydro_C2P_failed(i,j,k), w_lorentz(i,j,k))
-
-            !call GRHydro_RPR_Con2Prim_pt(dens_avg(i,j,k),scon1_avg(i,j,k),scon2_avg(i,j,k), &
-            !     scon3_avg(i,j,k),tau_avg(i,j,k), g11(i,j,k), g12(i,j,k), g13(i,j,k), g22(i,j,k), g23(i,j,k), g33(i,j,k), rho(i,j,k), &
+            !call GRHydro_RPR_Con2Prim_pt(dens(i,j,k),scon(i,j,k, 1),scon(i,j,k, 2), &
+            !     scon(i,j,k, 3),tau(i,j,k), g11(i,j,k), g12(i,j,k), g13(i,j,k), g22(i,j,k), g23(i,j,k), g33(i,j,k), rho(i,j,k), &
             !     eps(i,j,k),press(i,j,k), & 
             !     vup(i,j,k,1),vup(i,j,k,2),vup(i,j,k,3),&
             !     GRHydro_C2P_failed(i,j,k), w_lorentz(i,j,k))
+
+            call GRHydro_RPR_Con2Prim_pt(dens_avg(i,j,k),scon1_avg(i,j,k),scon2_avg(i,j,k), &
+                 scon3_avg(i,j,k),tau_avg(i,j,k), g11(i,j,k), g12(i,j,k), g13(i,j,k), g22(i,j,k), g23(i,j,k), g33(i,j,k), rho(i,j,k), &
+                 eps(i,j,k),press(i,j,k), & 
+                 vup(i,j,k,1),vup(i,j,k,2),vup(i,j,k,3),&
+                 GRHydro_C2P_failed(i,j,k), w_lorentz(i,j,k),)
             !     if(GRHydro_C2P_failed(i,j,k).ge.1) then
             !      write(*,*) "FAILED AT X:", X(i,j,k), " Y:", y(i,j,k), " Z:", z(i,j,k)
             !      write(10,*) "FAILED AT X:", X(i,j,k), " Y:", y(i,j,k), " Z:", z(i,j,k), " dens:", dens(i,j,k), "tau: ", tau(i,j,k), "scon: ", scon(i,j,k,1), ",", scon(i,j,k,2), ",", scon(i,j,k,3),&
