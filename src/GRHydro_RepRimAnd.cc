@@ -141,13 +141,13 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
     *vel3 = primitives.vel(2);
     *w_lorentz = primitives.w_lor;
     if (rep.adjust_cons) {
-        //write back corrected evolved vars to grid here
-        *scon1_in = evolved.scon(0);
-        *scon2_in = evolved.scon(1);
-        *scon3_in = evolved.scon(2);
-        *dens_in = evolved.dens;
-        *tau_in = evolved.tau;
-      }
+      //write back corrected evolved vars to grid here
+      *scon1_in = evolved.scon(0);
+      *scon2_in = evolved.scon(1);
+      *scon3_in = evolved.scon(2);
+      *dens_in = evolved.dens;
+      *tau_in = evolved.tau;
+    }
   }
 
   return;
