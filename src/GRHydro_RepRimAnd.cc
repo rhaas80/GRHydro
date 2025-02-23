@@ -48,6 +48,19 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
   real_t scon3 = *scon3_in ;
   real_t tau = *tau_in ;
 
+  // Faber 2007 fix for max s2
+  real_t s2 = (    g.lo(0,0) * scon1*scon1 +
+               2 * g.lo(1,0) * scon2*scon1 +
+               2 * g.lo(2,0) * scon3*scon1 +
+                   g.lo(1,1) * scon2*scon2 +
+               2 * g.lo(1,2) * scon2*scon3 +
+                   g.lo(2,2) * scon3*scon3) * g.det;
+  if(s2 >= tau*(tau + 2*dens)) {
+    real_t corrfac = sqrt(0.98 * tau*(tau + 2*dens)/s2);
+    *scon1_in = (scon1 *= corrfac);
+    *scon2_in = (scon2 *= corrfac);
+    *scon3_in = (scon3 *= corrfac);
+  }
 
   real_t max_eps = 11.;
   real_t max_rho = 1e6;
