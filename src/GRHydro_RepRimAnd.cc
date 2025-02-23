@@ -121,6 +121,17 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
     *tau_in = evolved.tau;
   } else {
     *error = 0;
+    static FILE * fh;
+    if (fh == NULL) {
+      fh = fopen("failures.txt", "wb");
+      setvbuf(fh, NULL, _IOLBF, BUFSIZ);
+    }
+    if(primitives.eps == 0.) {
+      fprintf(fh, "%.18e %.18e %.18e %.18e %.18e ", *dens_in, *scon1_in, *scon2_in, *scon3_in, *tau_in);
+      fprintf(fh, "%.18e %.18e %.18e %.18e %.18e %.18e ", g11, g12, g13, g22, g23, g33);
+      fprintf(fh, "%d\n", int(rep.status));
+      exit(1);
+    }
     //write back primitive vars
     *rho = primitives.rho;
     *eps = primitives.eps;

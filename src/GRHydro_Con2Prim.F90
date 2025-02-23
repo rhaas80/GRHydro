@@ -111,6 +111,7 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   endif
 
   ! Apply de-averaging
+  ! must be called in order 0,1,2 to correctly compute interior data without computing any NaN
   call apply(dens, nx, ny, nz, 0, temp1_avg)
   call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
   call apply(temp2_avg, nx, ny, nz, 2, dens_avg)
@@ -2073,6 +2074,7 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
   endif
 
   ! Set up stencil offsets based on direction
+  ! must be called in order 0,1,2 to correctly compute interior data without computing any NaN
   select case (dirn)
     case (0)  ! x-direction
       i_offset = [-2, -1, 0, 1, 2]
@@ -2088,8 +2090,8 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
       i_offset = [0, 0, 0, 0, 0]
       j_offset = [-2, -1, 0, 1, 2]
       k_offset = [0, 0, 0, 0, 0]
-      imin = 1
-      imax = nx
+      imin = 1 + stencil_width
+      imax = nx - stencil_width
       jmin = 1 + stencil_width
       jmax = ny - stencil_width
       kmin = 1
@@ -2098,10 +2100,10 @@ subroutine apply(data, nx, ny, nz, dirn, a_center_xyz)
       i_offset = [0, 0, 0, 0, 0]
       j_offset = [0, 0, 0, 0, 0]
       k_offset = [-2, -1, 0, 1, 2]
-      imin = 1
-      imax = nx
-      jmin = 1
-      jmax = ny
+      imin = 1 + stencil_width
+      imax = nx - stencil_width
+      jmin = 1 + stencil_width
+      jmax = ny - stencil_width
       kmin = 1 + stencil_width
       kmax = nz - stencil_width
   end select
