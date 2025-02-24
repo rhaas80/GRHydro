@@ -74,6 +74,8 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: scon1_avg, scon2_avg, scon3_avg
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: temp1_avg, temp2_avg
 
+  integer, parameter :: stencil_width = 2
+
 ! begin EOS Omni vars
   CCTK_INT  :: n,keytemp,anyerr,keyerr
   CCTK_REAL :: xpress,xeps,xtemp,xye
@@ -176,9 +178,9 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   !$OMP warnline, dummy1, dummy2,&
   !$OMP dens_in, tau_in, scon1_in, scon2_in, scon3_in, rho_in, vel_x_in, &
   !$OMP vel_y_in, vel_z_in, eps_in, press_in, w_lorentz_in, adjust_cons)
-  do k = 1, nz 
-    do j = 1, ny 
-      do i = 1, nx
+  do k = 1 + stencil_width, nz - stencil_width
+    do j = 1 + stencil_width, ny - stencil_width
+      do i = 1 + stencil_width, nx - stencil_width
 
 #if 0
          if (dens(i,j,k).ne.dens(i,j,k)) then
