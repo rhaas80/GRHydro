@@ -69,10 +69,21 @@ void CCTK_FCALL CCTK_FNAME(GRHydro_RPR_Con2Prim_pt)(
 
   atmosphere atmo{atmo_rho, atmo_eps, atmo_ye, atmo_p, atmo_cut};
 
-  // Faber 2007 fix for max s2
-  if(tau < 0.) {
-    // reset to tau in atmosphere
+
+  // basic sanity checks since RPR does not offer them outside of con2prim
+  if(dens < atmo_rho) {
+    *dens_in = dens = sqrt(g.det)*atmo_rho;
+    *scon1_in = scon1 = 0.;
+    *scon2_in = scon2 = 0.;
+    *scon3_in = scon3 = 0.;
     *tau_in = tau = sqrt(g.det)*atmo_rho*atmo_eps;
+  }
+
+  // Faber 2007 fix for max s2
+  const real_t atmo_tau = sqrt(g.det)*atmo_rho*atmo_eps;
+  if(tau < atmo_tau) {
+    // reset to tau in atmosphere
+    *tau_in = tau = atmo_tau;
   }
 
   real_t s2 = (    g.lo(0,0) * scon1*scon1 +
