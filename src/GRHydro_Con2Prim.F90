@@ -125,15 +125,15 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
 
   call apply(scon(:,:,:,1), nx, ny, nz, 0, temp1_avg)
   call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
-  call apply(temp1_avg, nx, ny, nz, 2, scon1_avg)
+  call apply(temp2_avg, nx, ny, nz, 2, scon1_avg)
 
   call apply(scon(:,:,:,2), nx, ny, nz, 0, temp1_avg)
   call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
-  call apply(temp1_avg, nx, ny, nz, 2, scon2_avg)
+  call apply(temp2_avg, nx, ny, nz, 2, scon2_avg)
 
   call apply(scon(:,:,:,3), nx, ny, nz, 0, temp1_avg)
   call apply(temp1_avg, nx, ny, nz, 1, temp2_avg)
-  call apply(temp1_avg, nx, ny, nz, 2, scon3_avg)
+  call apply(temp2_avg, nx, ny, nz, 2, scon3_avg)
 
   !! Initialize arrays
   !dens_avg = dens
