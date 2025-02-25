@@ -47,8 +47,9 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   DECLARE_CCTK_ARGUMENTS
   DECLARE_CCTK_PARAMETERS
   !!DECLARE_CCTK_FUNCTIONS
+  CCTK_INT :: Boundary_SelectGroupForBC
 
-  integer :: i, j, k, itracer, nx, ny, nz
+  integer :: i, j, k, itracer, nx, ny, nz, ierr
   CCTK_REAL :: uxx, uxy, uxz, uyy, uyz, uzz, pmin, epsmin, dummy1, dummy2
   logical :: epsnegative
   CCTK_INT :: adjust_cons
@@ -75,6 +76,9 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
   CCTK_REAL, DIMENSION(:,:,:), allocatable :: temp1_avg, temp2_avg
 
   integer, parameter :: stencil_width = 2
+
+  CCTK_INT, parameter :: negone = -1
+  CCTK_INT, parameter :: faces = CCTK_ALL_FACES
 
 ! begin EOS Omni vars
   CCTK_INT  :: n,keytemp,anyerr,keyerr
@@ -521,6 +525,16 @@ subroutine Conservative2Primitive(CCTK_ARGUMENTS)
 
   close(10)
   close(11)
+
+  ierr = 0
+  ierr = ierr + Boundary_SelectGroupForBC(cctkGH, faces, GRHydro_stencil, negone, "HydroBase::rho", "Flat")
+  ierr = ierr + Boundary_SelectGroupForBC(cctkGH, faces, GRHydro_stencil, negone, "HydroBase::vel", "Flat")
+  ierr = ierr + Boundary_SelectGroupForBC(cctkGH, faces, GRHydro_stencil, negone, "HydroBase::eps", "Flat")
+  ierr = ierr + Boundary_SelectGroupForBC(cctkGH, faces, GRHydro_stencil, negone, "HydroBase::press", "Flat")
+  ierr = ierr + Boundary_SelectGroupForBC(cctkGH, faces, GRHydro_stencil, negone, "HydroBase::w_lorentz", "Flat")
+  if(ierr .ne. 0) then
+    call CCTK_ERROR("Boundary_SelectGroupForBC failed")
+  end if
 
   return
 

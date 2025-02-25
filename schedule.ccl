@@ -1158,7 +1158,17 @@ if (CCTK_Equals(GRHydro_eos_type,"General"))
     schedule Conservative2Primitive IN HydroBase_Con2Prim AS Con2Prim IF GRHydro::execute_MoL_PostStep
     {
       LANG: Fortran
+
+      # only compute in the interior, so need a SYNC, should probably SYNC the
+      # de-averaged values instead
+      SYNC: HydroBase::rho, HydroBase::vel, HydroBase::eps, HydroBase::press, HydroBase::w_lorentz
+      # con2prim may have reset the cons
+      SYNC: dens, scon, tau
     } "Convert back to primitive variables (general)"
+
+    schedule group ApplyBCs AS GRHydro_Conservative2PrimitiveBCs IN HydroBase_Con2Prim AFTER Con2Prim IF GRHydro::execute_MoL_PostStep
+    {
+    } "Apply boundary conditions to prims"
   
     schedule Primitive2ConservativeCells IN HydroBase_Prim2ConInitial
     {
